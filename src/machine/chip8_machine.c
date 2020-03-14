@@ -6,17 +6,17 @@
 #include "../grammar/chip8_instructions.h"
 
 void chip8_stack_init(chip8_stack* stack) {
-    stack->stack_pointer = malloc(64 * sizeof(uint8_t));
+    stack->stack_pointer = malloc(64 * sizeof(uint16_t));
     stack->stack_bottom = stack->stack_pointer;
 }
 
-uint8_t chip8_stack_pop(chip8_stack* stack) {
-    uint8_t return_code = *stack->stack_pointer;
+uint16_t chip8_stack_pop(chip8_stack* stack) {
+    uint16_t return_code = *stack->stack_pointer;
     stack->stack_pointer--;
     return return_code;
 }
 
-void chip8_stack_push(chip8_stack* stack, uint8_t return_code) {
+void chip8_stack_push(chip8_stack* stack, uint16_t return_code) {
     stack->stack_pointer++;
     *stack->stack_pointer = return_code;
 }
@@ -29,21 +29,42 @@ void chip8_machine_init(chip8_machine* machine) {
 
 
 uint16_t chip8_get_instruction(chip8_machine* machine) {
-    machine->index_register = *machine->program_counter;
-    uint16_t instruction = machine->index_register;
+    uint16_t instruction = *machine->program_counter;
     return instruction;
 }
 
-uint16_t parse_instruction(chip8_machine* machine) {
-    uint16_t instruction = chip8_get_instruction(machine);
-    chip8_instruction instruction_;
-    chip8_instruction_init(&instruction_, instruction);
-    switch (scan_instruction(&instruction_)) {
+void chip8_set_pc(chip8_machine* machine, uint16_t address) {
+    machine->program_counter = machine->program_counter = (uint16_t *) (&machine->memory + address);
+}
+
+void parse_cls(chip8_machine* machine, chip8_instruction* instruction) {
+
+}
+
+void parse_return(chip8_machine* machine) {
+    uint8_t return_value = chip8_stack_pop(&machine->return_stack);
+    chip8_set_pc(machine, return_value);
+}
+
+void parse_jump(chip8_machine* machine, chip8_instruction* instruction) {
+    chip8_set_pc(machine, parse_hex(1, 3, instruction));
+}
+
+void parse_call(chip8_machine* machine, chip8_instruction* instruction) {
+    chip8_stack_push(&machine->return_stack, (machine->program_counter - (uint16_t*) &machine->memory));
+    chip8_set_pc(machine, parse_hex(1, 3, instruction));
+}
+
+void parse_instruction(chip8_machine* machine) {
+    uint16_t instruction_val = chip8_get_instruction(machine);
+    chip8_instruction instruction;
+    chip8_instruction_init(&instruction, instruction_val);
+    switch (scan_instruction(&instruction)) {
         case SYS: break;
-        case CLS: break;
-        case RET: break;
-        case JP: break;
-        case CALL: break;
+        case CLS: parse_cls(machine, &instruction); break;
+        case RET: parse_return(machine); break;
+        case JP: parse_jump(machine, &instruction); break;
+        case CALL: parse_call(machine, &instruction); break;
         case SE: break;
         case SNE: break;
         case SE_A: break;
@@ -75,4 +96,19 @@ uint16_t parse_instruction(chip8_machine* machine) {
         case LD_I: break;
         case LD_J: break;
     }
+}
+
+void execute_timers(chip8_machine* machine) {
+    if (machine->delay_timer>0) {
+        machine->delay_timer--;
+    }
+
+    if (machine->sound_timer>0) {
+        machine->sound_timer--;
+    }
+}
+
+void run_next(chip8_machine* machine) {
+    parse_instruction(machine);
+    execute_timers(machine);
 }

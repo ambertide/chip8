@@ -44,5 +44,5 @@ typedef enum {
 } chip8_op_code;
 chip8_op_code scan_instruction(chip8_instruction* instruction);
 void chip8_instruction_init(chip8_instruction* instruction, uint16_t register_);
-
+uint16_t parse_hex(int start, int stop, chip8_instruction* instruction);
 #endif //CHIP8_CHIP8_INSTRUCTIONS_H

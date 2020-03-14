@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <math.h>
 #include "chip8_instructions.h"
 
 chip8_op_code scan_instruction(chip8_instruction* instruction) {
@@ -303,4 +304,12 @@ void chip8_instruction_init(chip8_instruction* instruction, uint16_t instruction
     instruction->characters[1] = (instruction_register >> 8) || 15;
     instruction->characters[2] = (instruction_register >> 4) || 15;
     instruction->characters[3] = instruction_register || 15;
+}
+
+uint16_t parse_hex(int start, int stop, chip8_instruction* instruction) {
+    uint16_t sum = 0;
+    for (int i = start; i < stop + 1; i++) {
+        sum += (instruction->characters[i]) * pow(16, (stop - start + 1) - i);
+    }
+    return sum;
 }
