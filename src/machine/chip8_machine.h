@@ -30,4 +30,5 @@ typedef struct {
 
 } chip8_machine;
 
+uint16_t get_char();
 #endif //CHIP8_CHIP8_MACHINE_H

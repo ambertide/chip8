@@ -105,6 +105,34 @@ void parse_skip_if_button_not_pressed(chip8_machine* machine, chip8_instruction*
     }
 }
 
+void parse_load_reg_val(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] = parse_hex(2, 3, instruction);
+}
+
+void parse_load_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] = machine->registers[instruction->characters[2]];
+}
+
+void parse_load_index_register(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->index_register = parse_hex(1,3,instruction);
+}
+
+void parse_load_from_delay_timer(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] = machine->delay_timer;
+}
+
+void parse_load_keypress(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] = get_char();
+}
+
+void parse_load_to_delay_timer(chip8_machine* machine, chip8_instruction* instruction){
+    machine->delay_timer = machine->registers[instruction->characters[1]];
+}
+
+void parse_load_to_sound_timer(chip8_machine* machine, chip8_instruction* instruction){
+    machine->sound_timer = machine->registers[instruction->characters[1]];
+}
+
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
     chip8_instruction instruction;
@@ -118,9 +146,9 @@ void parse_instruction(chip8_machine* machine) {
         case SE: parse_skip_if_val_equal(machine, &instruction); break;
         case SNE: parse_skip_if_val_not_equal(machine, &instruction); break;
         case SE_A: parse_skip_if_reg_equal(machine, &instruction); break;
-        case LD: break;
+        case LD: parse_load_reg_val(machine, &instruction); break;
         case ADD: break;
-        case LD_A: break;
+        case LD_A: parse_load_reg_reg(machine, &instruction); break;
         case OR: break;
         case AND: break;
         case XOR: break;
@@ -130,16 +158,16 @@ void parse_instruction(chip8_machine* machine) {
         case SUBN: break;
         case SHL: break;
         case SNE_A: parse_skip_if_reg_not_equal(machine, &instruction); break;
-        case LD_B: break;
+        case LD_B: parse_load_index_register(machine, &instruction); break;
         case JP_A: break;
         case RND: break;
         case DRW: break;
         case SKP: parse_skip_if_button_pressed(machine, &instruction); break;
         case SKNP: parse_skip_if_button_not_pressed(machine, &instruction); break;
-        case LD_C: break;
-        case LD_D: break;
-        case LD_E: break;
-        case LD_F: break;
+        case LD_C: parse_load_from_delay_timer(machine, &instruction); break;
+        case LD_D: parse_load_keypress(machine, &instruction); break;
+        case LD_E: parse_load_to_delay_timer(machine, &instruction); break;
+        case LD_F: parse_load_to_sound_timer(machine, &instruction); break;
         case ADD_B: break;
         case LD_G: break;
         case LD_H: break;
