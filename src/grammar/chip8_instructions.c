@@ -313,3 +313,25 @@ uint16_t parse_hex(int start, int stop, chip8_instruction* instruction) {
     }
     return sum;
 }
+
+int check_char (uint16_t char_, char char_to_check) {
+    switch (char_) {
+        case 0: return (char_to_check == '0');
+        case 1: return (char_to_check == '1');
+        case 2: return (char_to_check == '2');
+        case 3: return (char_to_check == '3');
+        case 4: return (char_to_check == '4');
+        case 5: return (char_to_check == '5');
+        case 6: return (char_to_check == '6');
+        case 7: return (char_to_check == '7');
+        case 8: return (char_to_check == '8');
+        case 9: return (char_to_check == '9');
+        case 10: return (char_to_check == 'A');
+        case 11: return (char_to_check == 'B');
+        case 12: return (char_to_check == 'C');
+        case 13: return (char_to_check == 'D');
+        case 14: return (char_to_check == 'E');
+        case 15: return (char_to_check == 'F');
+        default: return 0;
+    }
+};

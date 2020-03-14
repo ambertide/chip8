@@ -37,6 +37,10 @@ void chip8_set_pc(chip8_machine* machine, uint16_t address) {
     machine->program_counter = machine->program_counter = (uint16_t *) (&machine->memory + address);
 }
 
+void chip8_skip_instruction(chip8_machine* machine) {
+    machine->program_counter+=2;
+}
+
 void parse_cls(chip8_machine* machine, chip8_instruction* instruction) {
 
 }
@@ -55,6 +59,42 @@ void parse_call(chip8_machine* machine, chip8_instruction* instruction) {
     chip8_set_pc(machine, parse_hex(1, 3, instruction));
 }
 
+void parse_skip_if_val_equal(chip8_machine* machine, chip8_instruction* instruction) {
+    if (machine->registers[instruction->characters[1]] == parse_hex(2, 3, instruction)) {
+        chip8_skip_instruction()
+    }
+}
+
+void parse_skip_if_val_not_equal(chip8_machine* machine, chip8_instruction* instruction) {
+    if (machine->registers[instruction->characters[1]] != parse_hex(2, 3, instruction)) {
+        chip8_skip_instruction()
+    }
+}
+
+void parse_skip_if_reg_equal(chip8_machine* machine, chip8_instruction* instruction) {
+    if (machine->registers[instruction->characters[1]] == machine->registers[instruction->characters[2]]) {
+        chip8_skip_instruction(machine);
+    }
+}
+
+void parse_skip_if_reg_not_equal(chip8_machine* machine, chip8_instruction* instruction) {
+    if (machine->registers[instruction->characters[1]] != machine->registers[instruction->characters[2]]) {
+        chip8_skip_instruction(machine);
+    }
+}
+
+void parse_skip_if_button_pressed(chip8_machine* machine, chip8_instruction* instruction) {
+    if (check_char(machine->registers[instruction->characters[1]], (char) getchar())) {
+        chip8_skip_instruction(machine);
+    }
+}
+
+void parse_skip_if_button_not_pressed(chip8_machine* machine, chip8_instruction* instruction) {
+    if (!check_char(machine->registers[instruction->characters[1]], (char) getchar())) {
+        chip8_skip_instruction(machine);
+    }
+}
+
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
     chip8_instruction instruction;
@@ -65,9 +105,9 @@ void parse_instruction(chip8_machine* machine) {
         case RET: parse_return(machine); break;
         case JP: parse_jump(machine, &instruction); break;
         case CALL: parse_call(machine, &instruction); break;
-        case SE: break;
-        case SNE: break;
-        case SE_A: break;
+        case SE: parse_skip_if_val_equal(machine, &instruction); break;
+        case SNE: parse_skip_if_val_not_equal(machine, &instruction); break;
+        case SE_A: parse_skip_if_reg_equal(machine, &instruction); break;
         case LD: break;
         case ADD: break;
         case LD_A: break;
@@ -79,13 +119,13 @@ void parse_instruction(chip8_machine* machine) {
         case SHR: break;
         case SUBN: break;
         case SHL: break;
-        case SNE_A: break;
+        case SNE_A: parse_skip_if_reg_not_equal(machine, &instruction); break;
         case LD_B: break;
         case JP_A: break;
         case RND: break;
         case DRW: break;
-        case SKP: break;
-        case SKNP: break;
+        case SKP: parse_skip_if_button_pressed(machine, &instruction); break;
+        case SKNP: parse_skip_if_button_not_pressed(machine, &instruction); break;
         case LD_C: break;
         case LD_D: break;
         case LD_E: break;
