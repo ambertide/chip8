@@ -21,10 +21,20 @@ void chip8_stack_push(chip8_stack* stack, uint16_t return_code) {
     *stack->stack_pointer = return_code;
 }
 
+void chip8_frame_buffer_init(chip8_frame_buffer* buf) {
+    for (int i = 0; i < 64; i++) {
+        for (int j = 0; j < 32; j++) {
+            buf->screen[i][j] = 0;
+        }
+    }
+}
+
 void chip8_machine_init(chip8_machine* machine) {
     chip8_stack_init(&machine->return_stack);
+    chip8_frame_buffer_init(&machine->frame_buffer);
     machine->index_register = 0;
     machine->program_counter = (uint16_t *) &machine->memory;
+
 }
 
 
@@ -42,7 +52,7 @@ void chip8_skip_instruction(chip8_machine* machine) {
 }
 
 void parse_cls(chip8_machine* machine, chip8_instruction* instruction) {
-
+    chip8_frame_buffer_init(&machine->frame_buffer);
 }
 
 void parse_return(chip8_machine* machine) {
@@ -61,13 +71,13 @@ void parse_call(chip8_machine* machine, chip8_instruction* instruction) {
 
 void parse_skip_if_val_equal(chip8_machine* machine, chip8_instruction* instruction) {
     if (machine->registers[instruction->characters[1]] == parse_hex(2, 3, instruction)) {
-        chip8_skip_instruction()
+        chip8_skip_instruction(machine);
     }
 }
 
 void parse_skip_if_val_not_equal(chip8_machine* machine, chip8_instruction* instruction) {
     if (machine->registers[instruction->characters[1]] != parse_hex(2, 3, instruction)) {
-        chip8_skip_instruction()
+        chip8_skip_instruction(machine);
     }
 }
 
