@@ -64,6 +64,10 @@ void parse_jump(chip8_machine* machine, chip8_instruction* instruction) {
     chip8_set_pc(machine, parse_hex(1, 3, instruction));
 }
 
+void parse_jump_offset(chip8_machine* machine, chip8_instruction* instruction) {
+    chip8_set_pc(machine, parse_hex(1, 3, instruction) + machine->registers[0]);
+}
+
 void parse_call(chip8_machine* machine, chip8_instruction* instruction) {
     chip8_stack_push(&machine->return_stack, (machine->program_counter - (uint16_t*) &machine->memory));
     chip8_set_pc(machine, parse_hex(1, 3, instruction));
@@ -159,7 +163,7 @@ void parse_instruction(chip8_machine* machine) {
         case SHL: break;
         case SNE_A: parse_skip_if_reg_not_equal(machine, &instruction); break;
         case LD_B: parse_load_index_register(machine, &instruction); break;
-        case JP_A: break;
+        case JP_A: parse_jump_offset(machine, &instruction); break;
         case RND: break;
         case DRW: break;
         case SKP: parse_skip_if_button_pressed(machine, &instruction); break;
