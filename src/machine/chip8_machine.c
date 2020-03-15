@@ -245,6 +245,11 @@ void parse_draw(chip8_machine* machine, chip8_instruction* instruction) {
     }
 }
 
+void load_sprite_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    uint16_t sprite_value = machine->registers[instruction->characters[1]];
+    machine->index_register = sprite_value * 5;
+}
+
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
     chip8_instruction instruction;
@@ -281,7 +286,7 @@ void parse_instruction(chip8_machine* machine) {
         case LD_E: parse_load_to_delay_timer(machine, &instruction); break;
         case LD_F: parse_load_to_sound_timer(machine, &instruction); break;
         case ADD_B: parse_add_ireg_reg(machine, &instruction); break;
-        case LD_G: break;
+        case LD_G: load_sprite_reg(machine, &instruction); break;
         case LD_H: parse_load_bcd(machine, &instruction); break;
         case LD_I: parse_load_from_reg_mem(machine, &instruction); break;
         case LD_J: parse_load_from_mem_reg(machine, &instruction); break;
