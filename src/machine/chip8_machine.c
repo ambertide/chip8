@@ -4,6 +4,7 @@
 
 #include "chip8_machine.h"
 #include "../grammar/chip8_instructions.h"
+#include <math.h>
 
 void chip8_stack_init(chip8_stack* stack) {
     stack->stack_pointer = malloc(64 * sizeof(uint16_t));
@@ -201,6 +202,29 @@ void parse_rand(chip8_machine* machine, chip8_instruction* instruction) {
     machine->registers[instruction->characters[1]] = parse_hex(2, 3, instruction) & random;
 }
 
+void parse_load_from_reg_mem(chip8_machine* machine, chip8_instruction* instruction) {
+    int mem_location = machine->index_register;
+    int reg_location = instruction->characters[1];
+    for (int i = 0; i <= reg_location; i++) {
+        machine->memory[mem_location + i] = machine->registers[i];
+    }
+}
+
+void parse_load_from_mem_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    int mem_location = machine->index_register;
+    int reg_location = instruction->characters[1];
+    for (int i = 0; i <= reg_location; i++) {
+        machine->registers[i] = machine->memory[mem_location + i];
+    }
+}
+
+void parse_load_bcd(chip8_machine* machine, chip8_instruction* instruction) {
+    uint8_t number = machine->registers[1];
+    for (int i = machine->index_register; i < machine->index_register + 3; i++) {
+        machine->memory[i] = (number / (uint8_t) pow(10, 3 - i)) % 10;
+    }
+}
+
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
     chip8_instruction instruction;
@@ -238,9 +262,9 @@ void parse_instruction(chip8_machine* machine) {
         case LD_F: parse_load_to_sound_timer(machine, &instruction); break;
         case ADD_B: parse_add_ireg_reg(machine, &instruction); break;
         case LD_G: break;
-        case LD_H: break;
-        case LD_I: break;
-        case LD_J: break;
+        case LD_H: parse_load_bcd(machine, &instruction); break;
+        case LD_I: parse_load_from_reg_mem(machine, &instruction); break;
+        case LD_J: parse_load_from_mem_reg(machine, &instruction); break;
     }
 }
 
