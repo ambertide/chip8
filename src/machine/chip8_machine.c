@@ -153,6 +153,53 @@ void parse_xor_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
     machine->registers[instruction->characters[1]] ^= machine->registers[instruction->characters[2]];
 }
 
+void parse_add_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    if ((uint32_t) machine->registers[instruction->characters[1]] + (uint32_t) machine->registers[instruction->characters[2]] > 255) {
+        machine->registers[15] = 1; // Set VF to 1 if there is overflow
+    } else {
+        machine->registers[15] = 0; // Otherwise to 0
+    }
+    machine->registers[instruction->characters[1]] =
+            ((uint32_t) machine->registers[instruction->characters[1]]
+            + (uint32_t) machine->registers[instruction->characters[2]]) % 255;
+}
+
+void parse_sub_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    if (machine->registers[instruction->characters[1]] > machine->registers[instruction->characters[2]]) {
+        machine->registers[15] = 1; // Set VF to 1 if x > y
+    } else {
+        machine->registers[15] = 0; // Otherwise 0
+    }
+    machine->registers[instruction->characters[1]] -= machine->registers[instruction->characters[2]];
+}
+
+void parse_sub_neg_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    if (machine->registers[instruction->characters[2]] > machine->registers[instruction->characters[1]]) {
+        machine->registers[15] = 1; // Set VF to 1 if y > x
+    } else {
+        machine->registers[15] = 0; // Otherwise to 0
+    }
+    machine->registers[instruction->characters[2]] -= machine->registers[instruction->characters[1]];
+}
+
+void parse_shr_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[15] = machine->registers[instruction->characters[1]] % 2; // 1 if LSB is 1 otherwise 0
+    machine->registers[instruction->characters[1]] >>= 1;
+}
+
+void parse_shl_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[15] = machine->registers[instruction->characters[1]] >= 128 ;
+    machine->registers[instruction->characters[1]] <<= 1;
+}
+
+void parse_add_ireg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->index_register = ((uint32_t) machine->index_register + machine->registers[instruction->characters[1]]) % 65535;
+}
+
+void parse_rand(chip8_machine* machine, chip8_instruction* instruction) {
+    uint8_t random = rand() % 256;
+    machine->registers[instruction->characters[1]] = parse_hex(2, 3, instruction) & random;
+}
 
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
@@ -173,15 +220,15 @@ void parse_instruction(chip8_machine* machine) {
         case OR: parse_or_reg_reg(machine, &instruction); break;
         case AND: parse_and_reg_reg(machine, &instruction); break;
         case XOR: parse_xor_reg_reg(machine, &instruction); break;
-        case ADD_A: break;
-        case SUB: break;
-        case SHR: break;
-        case SUBN: break;
-        case SHL: break;
+        case ADD_A: parse_add_reg_reg(machine, &instruction); break;
+        case SUB: parse_sub_reg_reg(machine, &instruction); break;
+        case SHR: parse_shr_reg_reg(machine, &instruction); break;
+        case SUBN: parse_sub_neg_reg_reg(machine, &instruction); break;
+        case SHL: parse_shl_reg_reg(machine, &instruction); break;
         case SNE_A: parse_skip_if_reg_not_equal(machine, &instruction); break;
         case LD_B: parse_load_index_register(machine, &instruction); break;
         case JP_A: parse_jump_offset(machine, &instruction); break;
-        case RND: break;
+        case RND: parse_rand(machine, &instruction); break;
         case DRW: break;
         case SKP: parse_skip_if_button_pressed(machine, &instruction); break;
         case SKNP: parse_skip_if_button_not_pressed(machine, &instruction); break;
@@ -189,7 +236,7 @@ void parse_instruction(chip8_machine* machine) {
         case LD_D: parse_load_keypress(machine, &instruction); break;
         case LD_E: parse_load_to_delay_timer(machine, &instruction); break;
         case LD_F: parse_load_to_sound_timer(machine, &instruction); break;
-        case ADD_B: break;
+        case ADD_B: parse_add_ireg_reg(machine, &instruction); break;
         case LD_G: break;
         case LD_H: break;
         case LD_I: break;
