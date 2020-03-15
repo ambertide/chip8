@@ -225,6 +225,26 @@ void parse_load_bcd(chip8_machine* machine, chip8_instruction* instruction) {
     }
 }
 
+void parse_draw(chip8_machine* machine, chip8_instruction* instruction) {
+    uint8_t* sprite_ptr = &machine->memory[machine->index_register];
+    uint8_t stop_offset = instruction->characters[3];
+    int start_x = machine->registers[instruction->characters[1]];
+    int start_y = machine->registers[instruction->characters[2]];
+    for (int j = start_y; j < start_y + 8; j++) {
+        uint8_t sprite_scan = *sprite_ptr;
+        int shift = 0;
+        for (int i = start_x; i < start_x + stop_offset; i++) {
+            uint8_t prior = machine->frame_buffer.screen[i%64][j%32];
+            machine->frame_buffer.screen[i % 64][j % 32] = (sprite_scan >> shift) & 1;
+            if (machine->frame_buffer.screen[i%64][j%32] != prior) {
+                machine->registers[15] = 1; // If collusion, set VF to 1.
+            }
+            shift++;
+        }
+        sprite_ptr++;
+    }
+}
+
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
     chip8_instruction instruction;
@@ -253,7 +273,7 @@ void parse_instruction(chip8_machine* machine) {
         case LD_B: parse_load_index_register(machine, &instruction); break;
         case JP_A: parse_jump_offset(machine, &instruction); break;
         case RND: parse_rand(machine, &instruction); break;
-        case DRW: break;
+        case DRW: parse_draw(machine, &instruction); break;
         case SKP: parse_skip_if_button_pressed(machine, &instruction); break;
         case SKNP: parse_skip_if_button_not_pressed(machine, &instruction); break;
         case LD_C: parse_load_from_delay_timer(machine, &instruction); break;
