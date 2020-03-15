@@ -137,6 +137,23 @@ void parse_load_to_sound_timer(chip8_machine* machine, chip8_instruction* instru
     machine->sound_timer = machine->registers[instruction->characters[1]];
 }
 
+void parse_add_register_byte(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] += parse_hex(2, 3, instruction);
+}
+
+void parse_or_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] |= machine->registers[instruction->characters[2]];
+}
+
+void parse_and_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] &= machine->registers[instruction->characters[2]];
+}
+
+void parse_xor_reg_reg(chip8_machine* machine, chip8_instruction* instruction) {
+    machine->registers[instruction->characters[1]] ^= machine->registers[instruction->characters[2]];
+}
+
+
 void parse_instruction(chip8_machine* machine) {
     uint16_t instruction_val = chip8_get_instruction(machine);
     chip8_instruction instruction;
@@ -151,11 +168,11 @@ void parse_instruction(chip8_machine* machine) {
         case SNE: parse_skip_if_val_not_equal(machine, &instruction); break;
         case SE_A: parse_skip_if_reg_equal(machine, &instruction); break;
         case LD: parse_load_reg_val(machine, &instruction); break;
-        case ADD: break;
+        case ADD: parse_add_register_byte(machine, &instruction); break;
         case LD_A: parse_load_reg_reg(machine, &instruction); break;
-        case OR: break;
-        case AND: break;
-        case XOR: break;
+        case OR: parse_or_reg_reg(machine, &instruction); break;
+        case AND: parse_and_reg_reg(machine, &instruction); break;
+        case XOR: parse_xor_reg_reg(machine, &instruction); break;
         case ADD_A: break;
         case SUB: break;
         case SHR: break;
