@@ -1,8 +1,6 @@
 package device
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // Convert an instruction to its character version.
 func getInstructionChar(instruction uint16) string {
@@ -30,6 +28,7 @@ type Processor struct {
 	registers *chip8Registers
 	display   *chip8Display
 	stack     *chip8Stack
+	keyboards *chip8Keyboard
 }
 
 // Load a standard Chip-8 Program to the memory
