@@ -35,7 +35,7 @@ func (p *Processor) executeSkipInstructions(instructionChar string, instruction 
 	register := getRegisterIndex(instructionChar[1])
 	register2 := getRegisterIndex(instructionChar[2]) // For 5XY0
 	msn := instructionChar[0]                         // Most significant nibble
-	lsn := instructionChar[4]                         // Least significant nibble
+	lsn := instructionChar[3]                         // Least significant nibble
 	switch {
 	case msn == '3' && p.registers.ReadRegister(register) == byteValue:
 		// Incrementing the program counter now will effectively

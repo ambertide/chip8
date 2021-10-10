@@ -4,7 +4,7 @@ import "fmt"
 
 // Convert an instruction to its character version.
 func getInstructionChar(instruction uint16) string {
-	return fmt.Sprintf("%X", instruction)
+	return fmt.Sprintf("%04X", instruction)
 }
 
 // Get register index from its hexadecimal representation.
@@ -31,6 +31,16 @@ type Processor struct {
 	keyboards *chip8Keyboard
 }
 
+func NewProcessor(screenBuffer *[32]uint64) *Processor {
+	processor := new(Processor)
+	processor.display = newDisplay(screenBuffer)
+	processor.memory = newMemory()
+	processor.registers = new(chip8Registers)
+	processor.keyboards = new(chip8Keyboard)
+	processor.stack = new(chip8Stack)
+	return processor
+}
+
 // Load a standard Chip-8 Program to the memory
 // And set the program counter accordingly.
 func (p *Processor) LoadProgram(program []byte, programSize uint16) {
@@ -51,7 +61,12 @@ func (p *Processor) LoadETIProgram(program []byte, programSize uint16) {
 func (p *Processor) fetchInstruction() uint16 {
 	mostSignificantByte := p.memory.ReadMemory(p.registers.GetProgramCounter())
 	leastSignificantByte := p.memory.ReadMemory(p.registers.GetProgramCounter() + 1)
-	return uint16(mostSignificantByte)<<16 + uint16(leastSignificantByte)
+	return uint16(mostSignificantByte)<<8 + uint16(leastSignificantByte)
+}
+
+// Returns true if the processor should halt.
+func (p *Processor) ShouldHalt() bool {
+	return p.registers.GetProgramCounter() >= 0x1000
 }
 
 // Run a CPU Fetch/Execute cycle.
