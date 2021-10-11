@@ -1,5 +1,9 @@
 package device
 
+import (
+	"log"
+)
+
 // This type of function is used to operate on register values.
 type OperationFunction func(byte, byte) byte
 
@@ -48,7 +52,6 @@ func (r *chip8Registers) RegisterOperationWithCarry(x uint8, y uint8, operation 
 // Given indexes of two registers, use their values in the operation function,
 // Store the return value in the register x.
 func (r *chip8Registers) RegisterOperation(x uint8, y uint8, operation OperationFunction) {
-
 	r.generalPurpose[x] = operation(r.generalPurpose[x], r.generalPurpose[y])
 }
 
@@ -92,8 +95,10 @@ func (r *chip8Registers) AccumulateIRegister(sourceRegister uint8) {
 // the digit stored in the source register.
 func (r *chip8Registers) SetIDigitSprite(sourceRegister uint8) {
 	characterIndex := r.ReadRegister(sourceRegister)
+	log.Printf("Getting character index for %X\n", characterIndex)
 	// Since characters consist of 5 bytes in their sprites,
 	// Just times 5 should work.
+	log.Printf("Writing address %03X\n to I register.\n", uint16(characterIndex)*5)
 	r.WriteIRegister(uint16(characterIndex) * 5)
 }
 
@@ -129,8 +134,8 @@ func (r *chip8Registers) LoadDelayTimer(destinationRegister uint8) {
 }
 
 // Write an array of bytes to the registers
-func (r *chip8Registers) BlockWriteRegisters(registerData [16]byte) {
-	copy(r.generalPurpose[:], registerData[:])
+func (r *chip8Registers) BlockWriteRegisters(registerData [16]byte, length uint8) {
+	copy(r.generalPurpose[:length], registerData[:length])
 }
 
 // Return all the registers.

@@ -119,11 +119,11 @@ func (g *Graphics) handleKeyboard() {
 // Loop through the graphics engine.
 func (g *Graphics) Mainloop() {
 	for !g.window.Closed() {
-		g.handleKeyboard()
 		g.batch.Clear()
 		g.drawPixels()
 		g.batch.Draw(g.window)
 		g.window.Update()
+		g.handleKeyboard()
 	}
 }
 

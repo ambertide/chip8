@@ -57,7 +57,7 @@ func (m *chip8Memory) BlockWriteToMemory(start uint16, stop uint16, data []byte)
 func (m *chip8Memory) BlockReadFromMemory(start uint16, stop uint16) []byte {
 	// Create a buffer to hold copied values
 	// Preallocate it as well.
-	buffer := make([]byte, stop-start+1)
+	buffer := make([]byte, stop-start)
 	// Since the read request may cross the reserved boundry.
 	// We must calculate the ranges we will copy from them.
 	var reservedStart, reservedStop, ramStart, ramStop uint16

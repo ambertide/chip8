@@ -55,7 +55,7 @@ func (p *Processor) LoadProgram(program []byte, programSize uint16) {
 	// Load the program.
 	p.memory.LoadProgram(program, programSize)
 	// Set the PC to standard start location.
-	p.registers.SetProgramCounter(0x200)
+	p.registers.SetProgramCounter(0x198)
 }
 
 // Load an ETI program to the memory and set
@@ -74,16 +74,15 @@ func (p *Processor) fetchInstruction() uint16 {
 
 // Returns true if the processor should halt.
 func (p *Processor) ShouldHalt() bool {
-	return p.registers.GetProgramCounter() >= 0x1000
+	return p.registers.GetProgramCounter() >= 0xFFD
 }
 
 // Run a CPU Fetch/Execute cycle.
 func (p *Processor) Cycle() {
+	//Increment the PC.
+	p.registers.IncrementProgramCounter()
 	// Fetch the instruction.
 	instruction := p.fetchInstruction()
 	// Execute the instruction
 	p.executeInstruction(instruction)
-	//Increment the PC.
-	p.registers.IncrementProgramCounter()
-
 }
