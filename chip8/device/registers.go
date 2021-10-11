@@ -2,6 +2,7 @@ package device
 
 import (
 	"log"
+	"time"
 )
 
 // This type of function is used to operate on register values.
@@ -152,5 +153,12 @@ func (r *chip8Registers) UpdateClockRegisters() {
 	}
 	if r.delayTimer > 0 {
 		r.delayTimer--
+	}
+}
+
+func (r *chip8Registers) RegisterClockLoop() {
+	for {
+		r.UpdateClockRegisters()
+		time.Sleep(time.Second / 60)
 	}
 }

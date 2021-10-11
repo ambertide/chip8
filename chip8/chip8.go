@@ -12,7 +12,6 @@ import (
 
 type Emulator struct {
 	screenBuffer   [32]uint64
-	halt           bool
 	processor      *device.Processor
 	keyboardBuffer uint16
 }
@@ -27,7 +26,7 @@ func (e *Emulator) RunEmulator(program []byte, programSize uint16) {
 	e.processor.LoadProgram(program, programSize)
 	for !e.processor.ShouldHalt() {
 		e.processor.Cycle()
-		time.Sleep(1 / 60 * time.Second)
+		time.Sleep(time.Second / 500)
 	}
 }
 

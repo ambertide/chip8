@@ -26,7 +26,9 @@ func (d *chip8Display) SyncBuffer() {
 
 // Clear the display.
 func (d *chip8Display) ClearDisplay() {
-	copy(d.screen[:], zeroBuffer[:])
+	for i := 0; i < 32; i++ {
+		d.screen[i] = 0
+	}
 	d.SyncBuffer()
 }
 

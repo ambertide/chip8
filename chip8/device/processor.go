@@ -46,6 +46,8 @@ func NewProcessor(screenBuffer *[32]uint64, keyboardBuffer *uint16) *Processor {
 	log.Println("Keyboard initialised.")
 	processor.stack = new(chip8Stack)
 	log.Println("Stack initialised.")
+	go processor.registers.RegisterClockLoop()
+	log.Println("Register clock loop started.")
 	return processor
 }
 
@@ -85,6 +87,4 @@ func (p *Processor) Cycle() {
 	instruction := p.fetchInstruction()
 	// Execute the instruction
 	p.executeInstruction(instruction)
-	// Update the timekeeping registers.
-	p.registers.UpdateClockRegisters()
 }

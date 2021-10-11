@@ -2,6 +2,7 @@ package emulator
 
 import (
 	"image"
+	"image/color"
 	_ "image/png"
 	"log"
 	"os"
@@ -119,6 +120,7 @@ func (g *Graphics) handleKeyboard() {
 // Loop through the graphics engine.
 func (g *Graphics) Mainloop() {
 	for !g.window.Closed() {
+		g.window.Clear(color.Black)
 		g.batch.Clear()
 		g.drawPixels()
 		g.batch.Draw(g.window)

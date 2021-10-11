@@ -22,6 +22,8 @@ const (
 // Execute system instructions RET and CLR
 func (p *Processor) executeSystemInstruction(instruction string) {
 	switch instruction {
+	case "0000":
+		break
 	case "00E0":
 		// CLR: Clear Screen
 		log.Print("INSTRUCTION: Clear the display.\n")
@@ -30,6 +32,8 @@ func (p *Processor) executeSystemInstruction(instruction string) {
 		// RET: Return from subroutine.
 		log.Print("INSTRUCTION: Return from subroutine.\n")
 		p.registers.SetProgramCounter(p.stack.Pop())
+	default:
+		log.Panicf("ERROR: Unknown Instruction %s.", instruction)
 	}
 }
 
@@ -67,7 +71,7 @@ func (p *Processor) executeSkipInstructions(instructionChar string, instruction 
 
 // Given the indexes for two registers and the operation type execute
 // the operation.
-func (p *Processor) executeLogicalInstructions(x uint8, y uint8, operationType LogicalInstructionType) {
+func (p *Processor) executeLogicalInstructions(x uint8, y uint8, operationType LogicalInstructionType, instruction uint16) {
 	switch operationType {
 	case Load:
 		log.Printf("INSTRUCTION: Arithmatic Logic Unit Load V%d, V%d.\n", x, y)
@@ -128,6 +132,8 @@ func (p *Processor) executeLogicalInstructions(x uint8, y uint8, operationType L
 				return b1 >> 7
 			},
 		)
+	default:
+		log.Panicf("ERROR: Unknown Instruction %04X.", instruction)
 	}
 }
 
@@ -201,6 +207,8 @@ func (p *Processor) executeRegisterInstructions(register uint8, instruction uint
 		copy(registersCopy[:register+1], registers[:register+1])
 		p.registers.BlockWriteRegisters(registersCopy, register+1)
 		//fmt.Printf("0x%03X => %#v\n%#v\n%#v", addrStart, registers, registersCopy, p.registers.generalPurpose)
+	default:
+		log.Panicf("ERROR: Unknown Instruction %04X.", instruction)
 	}
 }
 
@@ -233,7 +241,7 @@ func (p *Processor) executeInstruction(instruction uint16) {
 		log.Print("INSTRUCTION: Add an immediate value to a register.\n")
 		p.registers.AddRegisterImmediate(register, immediate)
 	case '8':
-		p.executeLogicalInstructions(register, register2, LogicalInstructionType(instruction&0xF))
+		p.executeLogicalInstructions(register, register2, LogicalInstructionType(instruction&0xF), instruction)
 	case 'A':
 		// LD: Load to I register.
 		log.Print("INSTRUCTION: Write to an I register.\n")
