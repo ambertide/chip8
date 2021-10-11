@@ -85,4 +85,6 @@ func (p *Processor) Cycle() {
 	instruction := p.fetchInstruction()
 	// Execute the instruction
 	p.executeInstruction(instruction)
+	// Update the timekeeping registers.
+	p.registers.UpdateClockRegisters()
 }

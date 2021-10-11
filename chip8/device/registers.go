@@ -144,3 +144,13 @@ func (r *chip8Registers) BlockReadRegisters() [16]byte {
 	copy(buffer[:], r.generalPurpose[:])
 	return buffer
 }
+
+// Decrement ST and DT.
+func (r *chip8Registers) UpdateClockRegisters() {
+	if r.soundTimer > 0 {
+		r.soundTimer--
+	}
+	if r.delayTimer > 0 {
+		r.delayTimer--
+	}
+}
