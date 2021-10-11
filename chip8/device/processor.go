@@ -1,6 +1,9 @@
 package device
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 // Convert an instruction to its character version.
 func getInstructionChar(instruction uint16) string {
@@ -31,13 +34,18 @@ type Processor struct {
 	keyboards *chip8Keyboard
 }
 
-func NewProcessor(screenBuffer *[32]uint64) *Processor {
+func NewProcessor(screenBuffer *[32]uint64, keyboardBuffer *uint16) *Processor {
 	processor := new(Processor)
 	processor.display = newDisplay(screenBuffer)
+	log.Println("Display initialised.")
 	processor.memory = newMemory()
+	log.Println("Memory initialised.")
 	processor.registers = new(chip8Registers)
-	processor.keyboards = new(chip8Keyboard)
+	log.Println("Registers initialised.")
+	processor.keyboards = NewKeyboard(keyboardBuffer)
+	log.Println("Keyboard initialised.")
 	processor.stack = new(chip8Stack)
+	log.Println("Stack initialised.")
 	return processor
 }
 
@@ -77,4 +85,5 @@ func (p *Processor) Cycle() {
 	p.executeInstruction(instruction)
 	//Increment the PC.
 	p.registers.IncrementProgramCounter()
+
 }

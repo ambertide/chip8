@@ -1,6 +1,8 @@
 package device
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 type LogicalInstructionType uint8
 
@@ -45,7 +47,7 @@ func (p *Processor) executeSkipInstructions(instructionChar string, instruction 
 		p.registers.IncrementProgramCounter()
 	case msn == '5' && lsn == '0' && p.registers.CompareRegisters(register, register2):
 		p.registers.IncrementProgramCounter()
-	case msn == '9' && lsn == '0' && p.registers.CompareRegisters(register, register2):
+	case msn == '9' && lsn == '0' && !p.registers.CompareRegisters(register, register2):
 		p.registers.IncrementProgramCounter()
 	case msn == 'E' && (instruction<<8 == 0x9E00) && p.keyboards.IsKeyPressed(p.registers.ReadRegister(register)):
 		p.registers.IncrementProgramCounter()
@@ -69,7 +71,11 @@ func (p *Processor) executeLogicalInstructions(x uint8, y uint8, operationType L
 	case Add:
 		p.registers.RegisterOperationWithCarry(x, y, func(b1, b2 byte) byte { return b1 + b2 },
 			func(b1, b2 byte) byte {
-				return byte(uint16(b1)+uint16(b2)>>16) & 0x1 // Calculate the carry bit.
+				if (uint16(b1) + uint16(b2)) > 255 {
+					return 1
+				} else {
+					return 0
+				}
 			},
 		)
 	case Sub:
@@ -165,6 +171,7 @@ func (p *Processor) executeRegisterInstructions(register uint8, instruction uint
 		var registersCopy [16]byte
 		copy(registersCopy[:], registers)
 		p.registers.BlockWriteRegisters(registersCopy)
+		//fmt.Printf("0x%03X => %#v\n%#v\n%#v", addrStart, registers, registersCopy, p.registers.generalPurpose)
 	}
 }
 
@@ -179,11 +186,11 @@ func (p *Processor) executeInstruction(instruction uint16) {
 		p.executeSystemInstruction(instructionCharacter)
 	case '1':
 		// JP: Jump to the location.
-		p.registers.SetProgramCounter(instruction & 0x0FFF)
+		p.registers.SetProgramCounter((instruction & 0x0FFF) - 2)
 	case '2':
 		// CALL: Call a subroutine.
 		p.stack.Push(p.registers.GetProgramCounter())
-		p.registers.SetProgramCounter(instruction & 0x0FFF)
+		p.registers.SetProgramCounter((instruction & 0x0FFF) - 2)
 	case '3', '4', '5', '9', 'E':
 		p.executeSkipInstructions(instructionCharacter, instruction)
 	case '6':
@@ -199,7 +206,7 @@ func (p *Processor) executeInstruction(instruction uint16) {
 		p.registers.WriteIRegister(instruction & 0xFFF)
 	case 'B':
 		// JP: Jump to V0 + NNN.
-		p.registers.SetProgramCounter(uint16(p.registers.ReadRegister(0)) + instruction&0xFFF)
+		p.registers.SetProgramCounter((uint16(p.registers.ReadRegister(0)) + instruction&0xFFF) - 2)
 	case 'C':
 		// RND: Set VX tp Random byte AND immediate
 		p.executeRandomAnd(register, immediate)

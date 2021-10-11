@@ -35,12 +35,17 @@ func (d *chip8Display) ClearDisplay() {
 // are erased.
 func (d *chip8Display) DrawSprite(x byte, y byte, height byte, sprite []byte) bool {
 	collusion := false
-	for i, spriteRow := range sprite {
+	for i, spriteRow := range sprite[:height] {
 		displayRow := d.screen[i+int(y)]
 		// Convert sprite row to have space.
 		paddedSpriteRow := uint64(spriteRow)
 		// Align the sprite row to its XOR location.
-		alignedSpriteRow := paddedSpriteRow << (64 - x)
+		alignedSpriteRow := paddedSpriteRow
+		if x < 56 {
+			alignedSpriteRow = paddedSpriteRow << (56 - x)
+		} else {
+			alignedSpriteRow = paddedSpriteRow >> (x - 56)
+		}
 		// Check for collusion
 		collusion = collusion || (alignedSpriteRow^displayRow != displayRow)
 		// And XOR the screen.

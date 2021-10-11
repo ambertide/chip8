@@ -73,7 +73,7 @@ func (m *chip8Memory) BlockReadFromMemory(start uint16, stop uint16) []byte {
 	}
 	// Finally we must calculate the stop point of the reserved
 	// Copy in the buffer.
-	seperator := reservedStop
+	seperator := reservedStop - reservedStart
 	// Now we can finally copy our values.
 	copy(buffer[:seperator], m.reserved[reservedStart:reservedStop])
 	copy(buffer[seperator:], m.ram[ramStart:ramStop])

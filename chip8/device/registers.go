@@ -27,7 +27,7 @@ func (r *chip8Registers) ReadRegister(registerIndex uint8) byte {
 // Read register as BCD array, ie: 100 first then 10s then 1s.
 func (r *chip8Registers) ReadRegisterBCD(registerIndex uint8) [3]byte {
 	value := r.ReadRegister(registerIndex)
-	return [3]byte{value / 100, (value / 10) % 100, value % 10}
+	return [3]byte{value / 100, (value / 10) % 10, value % 10}
 }
 
 // Add to the value of the register with the given
@@ -130,12 +130,12 @@ func (r *chip8Registers) LoadDelayTimer(destinationRegister uint8) {
 
 // Write an array of bytes to the registers
 func (r *chip8Registers) BlockWriteRegisters(registerData [16]byte) {
-	copy(registerData[:], r.generalPurpose[:])
+	copy(r.generalPurpose[:], registerData[:])
 }
 
 // Return all the registers.
 func (r *chip8Registers) BlockReadRegisters() [16]byte {
 	var buffer [16]byte
-	copy(r.generalPurpose[:], buffer[:])
+	copy(buffer[:], r.generalPurpose[:])
 	return buffer
 }
