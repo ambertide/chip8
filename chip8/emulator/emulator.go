@@ -12,6 +12,7 @@ type Emulator struct {
 	screenBuffer   [32]uint64
 	processor      *device.Processor
 	keyboardBuffer uint16
+	soundBuffer    bool
 	clockSpeed     uint64
 	programPath    string
 }
@@ -20,7 +21,7 @@ func NewEmulator(clockSpeed uint64, programPath string) *Emulator {
 	emulator := new(Emulator)
 	emulator.clockSpeed = clockSpeed
 	emulator.programPath = programPath
-	emulator.processor = device.NewProcessor(&emulator.screenBuffer, &emulator.keyboardBuffer)
+	emulator.processor = device.NewProcessor(&emulator.screenBuffer, &emulator.keyboardBuffer, &emulator.soundBuffer)
 	return emulator
 }
 
@@ -51,6 +52,7 @@ func RunEmulator(clockSpeed uint64, programPath string) {
 	e := NewEmulator(clockSpeed, programPath)
 	log.Println("Emulator initialised.")
 	go e.emulatorCode()
+	go BeepRoutine(&e.soundBuffer)
 	log.Println("Emulator goroutine dispatched.")
 	RunGraphics(&e.screenBuffer, &e.keyboardBuffer)
 }

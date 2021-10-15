@@ -34,13 +34,13 @@ type Processor struct {
 	keyboards *chip8Keyboard
 }
 
-func NewProcessor(screenBuffer *[32]uint64, keyboardBuffer *uint16) *Processor {
+func NewProcessor(screenBuffer *[32]uint64, keyboardBuffer *uint16, soundBuffer *bool) *Processor {
 	processor := new(Processor)
 	processor.display = newDisplay(screenBuffer)
 	log.Println("Display initialised.")
 	processor.memory = newMemory()
 	log.Println("Memory initialised.")
-	processor.registers = new(chip8Registers)
+	processor.registers = NewRegisters(soundBuffer)
 	log.Println("Registers initialised.")
 	processor.keyboards = NewKeyboard(keyboardBuffer)
 	log.Println("Keyboard initialised.")

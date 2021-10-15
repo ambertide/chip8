@@ -17,6 +17,7 @@ type chip8Registers struct {
 	programCounter uint16
 	delayTimer     byte
 	soundTimer     byte
+	soundBuffer    *bool
 }
 
 // Write to a general purpose register.
@@ -154,6 +155,7 @@ func (r *chip8Registers) UpdateClockRegisters() {
 	if r.delayTimer > 0 {
 		r.delayTimer--
 	}
+	*r.soundBuffer = r.soundTimer > 0
 }
 
 func (r *chip8Registers) RegisterClockLoop() {
@@ -161,4 +163,11 @@ func (r *chip8Registers) RegisterClockLoop() {
 		r.UpdateClockRegisters()
 		time.Sleep(time.Second / 60)
 	}
+}
+
+// Initialise a new register with a sound buffer.
+func NewRegisters(soundBuffer *bool) *chip8Registers {
+	register := new(chip8Registers)
+	register.soundBuffer = soundBuffer
+	return register
 }
