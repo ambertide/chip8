@@ -1,7 +1,5 @@
 package device
 
-import "log"
-
 type chip8Keyboard struct {
 	keyboardMask *uint16
 }
@@ -20,7 +18,7 @@ func DecodeKey(keyboardMask uint16) byte {
 	for i := 0; i < 16; i++ {
 		keyboardMask := keyboardMask >> i
 		if keyboardMask&1 == 1 {
-			log.Printf("User pressed %X\n", i)
+			////log.Printf("User pressed %X\n", i)
 			return byte(i)
 		}
 	}
@@ -29,7 +27,7 @@ func DecodeKey(keyboardMask uint16) byte {
 
 // Halt program execution until key is pressed.
 func (k *chip8Keyboard) WaitForKeyPress() byte {
-	log.Println("Waiting for key press.")
+	////log.Println("Waiting for key press.")
 	for {
 		keyboradMask := *k.keyboardMask
 		if keyboradMask != 0 {

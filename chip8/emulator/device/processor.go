@@ -2,7 +2,6 @@ package device
 
 import (
 	"fmt"
-	"log"
 )
 
 // Convert an instruction to its character version.
@@ -37,17 +36,17 @@ type Processor struct {
 func NewProcessor(screenBuffer *[32]uint64, keyboardBuffer *uint16, soundBuffer *bool) *Processor {
 	processor := new(Processor)
 	processor.display = newDisplay(screenBuffer)
-	log.Println("Display initialised.")
+	//log.Println("Display initialised.")
 	processor.memory = newMemory()
-	log.Println("Memory initialised.")
+	//log.Println("Memory initialised.")
 	processor.registers = NewRegisters(soundBuffer)
-	log.Println("Registers initialised.")
+	//log.Println("Registers initialised.")
 	processor.keyboards = NewKeyboard(keyboardBuffer)
-	log.Println("Keyboard initialised.")
+	//log.Println("Keyboard initialised.")
 	processor.stack = new(chip8Stack)
-	log.Println("Stack initialised.")
+	//log.Println("Stack initialised.")
 	go processor.registers.RegisterClockLoop()
-	log.Println("Register clock loop started.")
+	//log.Println("Register clock loop started.")
 	return processor
 }
 

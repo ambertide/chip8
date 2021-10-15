@@ -4,7 +4,6 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
-	"log"
 	"os"
 
 	"github.com/faiface/pixel"
@@ -130,9 +129,9 @@ func (g *Graphics) Mainloop() {
 }
 
 func RunGraphics(screenBuffer *[32]uint64, keyboardBuffer *uint16) {
-	log.Println("Graphic initialisation starting...")
+	//log.Println("Graphic initialisation starting...")
 	graphics := NewGraphics(screenBuffer, keyboardBuffer)
-	log.Println("Graphics initialised")
+	//log.Println("Graphics initialised")
 	graphics.Mainloop()
 
 }

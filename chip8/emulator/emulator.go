@@ -1,7 +1,6 @@
 package emulator
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -50,9 +49,9 @@ func (emulator *Emulator) emulatorCode() {
 // Run the emulator subroutines.
 func RunEmulator(clockSpeed uint64, programPath string) {
 	e := NewEmulator(clockSpeed, programPath)
-	log.Println("Emulator initialised.")
+	//log.Println("Emulator initialised.")
 	go e.emulatorCode()
 	go BeepRoutine(&e.soundBuffer)
-	log.Println("Emulator goroutine dispatched.")
+	//log.Println("Emulator goroutine dispatched.")
 	RunGraphics(&e.screenBuffer, &e.keyboardBuffer)
 }

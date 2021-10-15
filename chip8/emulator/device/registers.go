@@ -1,7 +1,6 @@
 package device
 
 import (
-	"log"
 	"time"
 )
 
@@ -97,10 +96,10 @@ func (r *chip8Registers) AccumulateIRegister(sourceRegister uint8) {
 // the digit stored in the source register.
 func (r *chip8Registers) SetIDigitSprite(sourceRegister uint8) {
 	characterIndex := r.ReadRegister(sourceRegister)
-	log.Printf("Getting character index for %X\n", characterIndex)
+	//log.Printf("Getting character index for %X\n", characterIndex)
 	// Since characters consist of 5 bytes in their sprites,
 	// Just times 5 should work.
-	log.Printf("Writing address %03X\n to I register.\n", uint16(characterIndex)*5)
+	//log.Printf("Writing address %03X\n to I register.\n", uint16(characterIndex)*5)
 	r.WriteIRegister(uint16(characterIndex) * 5)
 }
 
