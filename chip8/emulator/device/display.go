@@ -1,9 +1,5 @@
 package device
 
-type pixel bool
-
-var zeroBuffer = [32]uint64{}
-
 type chip8Display struct {
 	// A 64x32 pixel screen
 	// Can easilly be represented
@@ -38,7 +34,7 @@ func (d *chip8Display) ClearDisplay() {
 func (d *chip8Display) DrawSprite(x byte, y byte, height byte, sprite []byte) bool {
 	collusion := false
 	for i, spriteRow := range sprite[:height] {
-		displayRow := d.screen[i+int(y)]
+		displayRow := d.screen[(i+int(y))%32]
 		// Convert sprite row to have space.
 		paddedSpriteRow := uint64(spriteRow)
 		// Align the sprite row to its XOR location.
@@ -51,7 +47,7 @@ func (d *chip8Display) DrawSprite(x byte, y byte, height byte, sprite []byte) bo
 		// Check for collusion
 		collusion = collusion || (alignedSpriteRow&displayRow != 0)
 		// And XOR the screen.
-		d.screen[i+int(y)] ^= alignedSpriteRow
+		d.screen[(i+int(y))%32] ^= alignedSpriteRow
 	}
 	d.SyncBuffer()
 	return collusion
