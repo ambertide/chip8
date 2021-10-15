@@ -2,6 +2,8 @@ package device
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 )
 
 // Convert an instruction to its character version.
@@ -34,6 +36,7 @@ type Processor struct {
 }
 
 func NewProcessor(screenBuffer *[32]uint64, keyboardBuffer *uint16, soundBuffer *bool) *Processor {
+	rand.Seed(time.Now().Unix())
 	processor := new(Processor)
 	processor.display = newDisplay(screenBuffer)
 	//log.Println("Display initialised.")
