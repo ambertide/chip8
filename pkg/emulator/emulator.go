@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ambertide/chip8/emulator/device"
+	"github.com/ambertide/chip8/pkg/emulator/device"
 )
 
 type Emulator struct {

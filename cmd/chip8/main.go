@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/ambertide/chip8/emulator"
+	"github.com/ambertide/chip8/pkg/emulator"
 	"github.com/faiface/pixel/pixelgl"
 )
 
