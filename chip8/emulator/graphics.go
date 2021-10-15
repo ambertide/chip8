@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
-	"os"
+	"log"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -40,14 +40,15 @@ var keysToChip8 = map[pixelgl.Button]uint16{
 // Almost verbatim from the Pixel tutorial in
 // https://github.com/faiface/pixel/wiki/Drawing-a-Sprite
 func (g *Graphics) loadPixelSprite() pixel.Picture {
-	file, err := os.Open("assets/pixelSprite.png")
-	if err != nil {
-		panic(err)
+	img := image.NewRGBA(image.Rect(0, 0, 10, 10))
+	for i := 0; i < 10; i++ {
+		for j := 0; j < 10; j++ {
+			img.SetRGBA(i, j, color.RGBA{255, 255, 255, 1})
+		}
 	}
-	defer file.Close()
-	img, _, _ := image.Decode(file)
 	picture := pixel.PictureDataFromImage(img)
 	g.pixelSprite = pixel.NewSprite(picture, picture.Bounds())
+	log.Print("Hi")
 	return picture
 }
 
