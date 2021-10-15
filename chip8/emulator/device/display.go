@@ -49,7 +49,7 @@ func (d *chip8Display) DrawSprite(x byte, y byte, height byte, sprite []byte) bo
 			alignedSpriteRow = paddedSpriteRow >> (x - 56)
 		}
 		// Check for collusion
-		collusion = collusion || (alignedSpriteRow^displayRow != displayRow)
+		collusion = collusion || (alignedSpriteRow&displayRow != 0)
 		// And XOR the screen.
 		d.screen[i+int(y)] ^= alignedSpriteRow
 	}
