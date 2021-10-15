@@ -1,4 +1,6 @@
-# A Chip8 Emulator in Go
+# A Chip8 Emulator in Go 
+
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ambertide/chip8)
 
 chip8.go is a simple Chip8 emulator, compliant with the technical standard laid out in the 
 [Cowgod's Manual](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM). Graphics and sound are both
