@@ -4,7 +4,6 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
-	"log"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -48,7 +47,7 @@ func (g *Graphics) loadPixelSprite() pixel.Picture {
 	}
 	picture := pixel.PictureDataFromImage(img)
 	g.pixelSprite = pixel.NewSprite(picture, picture.Bounds())
-	log.Print("Hi")
+	//log.Print("Hi")
 	return picture
 }
 
