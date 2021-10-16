@@ -39,8 +39,8 @@ func (emulator *Emulator) emulatorCode() {
 		panic(err)
 	}
 	var program [0xFFF]byte // Maximum ROM size.
-	programSize, err2 := file.Read(program[:])
-	if err2 != nil {
+	programSize, err := file.Read(program[:])
+	if err != nil {
 		panic(err)
 	}
 	emulator.RunEmulator(program[:], uint16(programSize))
